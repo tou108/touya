@@ -21,22 +21,45 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    # icon.ico が存在しないとビルドエラーになるため最小 ico を生成する
+    - name: Create dummy icon.ico
+      shell: pwsh
+      run: |
+        $dir = "NXMacroAdvanced/NXMacroAdvanced/Resources"
+        New-Item -ItemType Directory -Force -Path $dir | Out-Null
+        # 最小有効 ICO (1x1 px, 32bpp)
+        $ico = [byte[]](
+          0x00,0x00,0x01,0x00,0x01,0x00,0x01,0x01,
+          0x00,0x00,0x01,0x00,0x20,0x00,0x28,0x00,
+          0x00,0x00,0x16,0x00,0x00,0x00,0x28,0x00,
+          0x00,0x00,0x01,0x00,0x00,0x00,0x02,0x00,
+          0x00,0x00,0x01,0x00,0x20,0x00,0x00,0x00,
+          0x00,0x00,0x04,0x00,0x00,0x00,0x00,0x00,
+          0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+          0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+          0x00,0x00,0x00,0x00,0x00,0x00
+        )
+        [IO.File]::WriteAllBytes("$dir/icon.ico", $ico)
+
+    # csproj の ApplicationIcon を動的に確認（念のため）
     - name: Restore
       run: dotnet restore NXMacroAdvanced/NXMacroAdvanced.csproj
 
     - name: Publish (Single File / Self-Contained)
-      run: >
-        dotnet publish NXMacroAdvanced/NXMacroAdvanced.csproj
-        --configuration Release
-        --runtime win-x64
-        --self-contained true
-        --no-restore
-        -o publish
+      shell: pwsh
+      run: |
+        dotnet publish NXMacroAdvanced/NXMacroAdvanced.csproj `
+          --configuration Release `
+          --runtime win-x64 `
+          --self-contained true `
+          --no-restore `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -o publish
 
     # OpenCvSharpExtern.dll など native DLL も同梱するため zip でまとめる
     - name: Zip artifact
-      run: Compress-Archive -Path publish\* -DestinationPath NXMacroAdvanced-win-x64.zip
       shell: pwsh
+      run: Compress-Archive -Path publish\* -DestinationPath NXMacroAdvanced-win-x64.zip
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
