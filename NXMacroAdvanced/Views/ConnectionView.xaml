@@ -1,1 +1,153 @@
+<UserControl x:Class="NXMacroAdvanced.Views.ConnectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:models="clr-namespace:NXMacroAdvanced.Models"
+             Background="{StaticResource NxBg}">
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="ConnectionTypes"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:ConnectionType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,20" MaxWidth="640" HorizontalAlignment="Left">
 
+            <!-- ヘッダー -->
+            <TextBlock Text="接続設定" FontSize="22" FontWeight="Bold"
+                       Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,16"/>
+
+            <!-- 接続タイプ選択 -->
+            <TextBlock Text="接続タイプ" Style="{StaticResource SectionHeader}"/>
+            <ComboBox SelectedItem="{Binding SelectedType}"
+                      ItemsSource="{Binding Source={StaticResource ConnectionTypes}}"
+                      md:HintAssist.Hint="接続タイプを選択"
+                      Style="{StaticResource MaterialDesignComboBox}"
+                      Width="300" HorizontalAlignment="Left" Margin="0,0,0,16"/>
+
+            <!-- ─── USB HID 設定 ─── -->
+            <Border Background="{StaticResource NxSurface}" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="USB HID 設定" FontSize="14" FontWeight="Medium"
+                               Foreground="{StaticResource NxAccent}" Margin="0,0,0,12"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="140"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox Grid.Column="0"
+                                  ItemsSource="{Binding AvailablePorts}"
+                                  SelectedItem="{Binding ComPort}"
+                                  md:HintAssist.Hint="COMポート"
+                                  Style="{StaticResource MaterialDesignComboBox}"/>
+
+                        <Button Grid.Column="2"
+                                Command="{Binding RefreshPortsCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Content="🔄 更新" Height="36" FontSize="12"/>
+                    </Grid>
+
+                    <TextBox Text="{Binding BaudRate, UpdateSourceTrigger=PropertyChanged}"
+                             md:HintAssist.Hint="ボーレート"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Margin="0,8,0,0" Width="180" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ─── USB Gadget 設定 ─── -->
+            <Border Background="{StaticResource NxSurface}" CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="USB Gadget 設定 (Raspberry Pi)" FontSize="14" FontWeight="Medium"
+                               Foreground="{StaticResource NxAccent}" Margin="0,0,0,12"/>
+
+                    <CheckBox Content="TCP接続を使用 (Wi-Fi)"
+                              IsChecked="{Binding GadgetUseTcp}"
+                              Style="{StaticResource MaterialDesignCheckBox}"
+                              Margin="0,0,0,8"/>
+
+                    <TextBox Text="{Binding GadgetComPort, UpdateSourceTrigger=PropertyChanged}"
+                             md:HintAssist.Hint="ガジェット COMポート"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Margin="0,0,0,8" Width="200" HorizontalAlignment="Left"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding GadgetTcpIp, UpdateSourceTrigger=PropertyChanged}"
+                                 md:HintAssist.Hint="TCP IPアドレス"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                        <TextBox Grid.Column="2"
+                                 Text="{Binding GadgetTcpPort, UpdateSourceTrigger=PropertyChanged}"
+                                 md:HintAssist.Hint="ポート"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ─── Bluetooth 設定 ─── -->
+            <Border Background="{StaticResource NxSurface}" CornerRadius="8" Padding="16" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Bluetooth 設定" FontSize="14" FontWeight="Medium"
+                               Foreground="{StaticResource NxAccent}" Margin="0,0,0,12"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Grid.Column="0"
+                                  ItemsSource="{Binding BtDevices}"
+                                  SelectedValue="{Binding BtAddress}"
+                                  md:HintAssist.Hint="Bluetoothデバイス"
+                                  Style="{StaticResource MaterialDesignComboBox}"/>
+                        <Button Grid.Column="2"
+                                Command="{Binding ScanBluetoothCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Content="🔍 スキャン" Height="36" FontSize="12"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- ─── 接続ボタン ─── -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <Button Command="{Binding ConnectCommand}"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Background="{StaticResource NxPrimary}"
+                        Content="🔌 接続" Width="120" Height="40" FontSize="14"
+                        IsEnabled="{Binding IsConnecting, Converter={StaticResource InvBool}}"
+                        Margin="0,0,12,0"/>
+                <Button Command="{Binding DisconnectCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Content="✖ 切断" Width="100" Height="40" FontSize="14"/>
+            </StackPanel>
+
+            <!-- ─── 接続状態 ─── -->
+            <Border Background="{StaticResource NxSurface2}" CornerRadius="6" Padding="12,8">
+                <StackPanel Orientation="Horizontal">
+                    <md:PackIcon Kind="CheckCircle" Width="18" Height="18"
+                                 Foreground="{StaticResource NxSuccess}" VerticalAlignment="Center"
+                                 Visibility="{Binding IsConnected, Converter={StaticResource BoolToVis}}"/>
+                    <md:PackIcon Kind="CloseCircle" Width="18" Height="18"
+                                 Foreground="#555" VerticalAlignment="Center"
+                                 Visibility="{Binding IsConnected, Converter={StaticResource BoolToVis}, ConverterParameter=inverse}"/>
+                    <TextBlock Text="{Binding StatusText}" Margin="8,0,0,0"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}" FontSize="13"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

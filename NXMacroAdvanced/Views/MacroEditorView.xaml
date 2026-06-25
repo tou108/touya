@@ -1,0 +1,152 @@
+<UserControl x:Class="NXMacroAdvanced.Views.MacroEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="{StaticResource NxBg}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="160"/>
+        </Grid.RowDefinitions>
+
+        <!-- ─── ヘッダー ─── -->
+        <TextBlock Grid.Row="0" Text="マクロエディター" FontSize="22" FontWeight="Bold"
+                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,12"/>
+
+        <!-- ─── ツールバー ─── -->
+        <Border Grid.Row="1" Background="{StaticResource NxSurface}" CornerRadius="8"
+                Padding="10,8" Margin="0,0,0,8">
+            <DockPanel>
+                <!-- ファイル操作 -->
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                    <Button Command="{Binding NewFileCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            ToolTip="新規" Margin="0,0,4,0">
+                        <md:PackIcon Kind="FileOutline" Width="18" Height="18"/>
+                    </Button>
+                    <Button Command="{Binding OpenFileCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            ToolTip="開く" Margin="0,0,4,0">
+                        <md:PackIcon Kind="FolderOpenOutline" Width="18" Height="18"/>
+                    </Button>
+                    <Button Command="{Binding SaveFileCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            ToolTip="保存" Margin="0,0,4,0">
+                        <md:PackIcon Kind="ContentSaveOutline" Width="18" Height="18"/>
+                    </Button>
+                    <Button Command="{Binding SaveFileAsCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            ToolTip="名前を付けて保存" Margin="0,0,4,0">
+                        <md:PackIcon Kind="ContentSaveEditOutline" Width="18" Height="18"/>
+                    </Button>
+                    <Separator Style="{StaticResource MaterialDesignLightSeparator}"
+                               Margin="6,2" Width="1" VerticalAlignment="Stretch"/>
+                    <Button Command="{Binding ValidateCommand}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Content="✔ 構文チェック" FontSize="12" Height="30" Margin="0,0,8,0"/>
+                </StackPanel>
+
+                <!-- 実行コントロール -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <!-- ループ設定 -->
+                    <TextBlock Text="ループ:" VerticalAlignment="Center" Margin="0,0,6,0"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}" FontSize="12"/>
+                    <TextBox Text="{Binding LoopCount, UpdateSourceTrigger=PropertyChanged}"
+                             Width="50" Height="28" FontSize="12"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             IsEnabled="{Binding InfiniteLoop, Converter={StaticResource InvBool}}"
+                             Margin="0,0,6,0"/>
+                    <CheckBox Content="∞" IsChecked="{Binding InfiniteLoop}"
+                              Style="{StaticResource MaterialDesignCheckBox}"
+                              VerticalAlignment="Center" Margin="0,0,12,0"/>
+
+                    <!-- 一時停止 -->
+                    <Button Command="{Binding PauseCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            ToolTip="一時停止 / 再開"
+                            Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}"
+                            Margin="0,0,4,0">
+                        <md:PackIcon Kind="PauseCircleOutline" Width="22" Height="22"/>
+                    </Button>
+
+                    <!-- 停止 -->
+                    <Button Command="{Binding StopCommand}"
+                            Style="{StaticResource MaterialDesignIconButton}"
+                            Foreground="#FF5252" ToolTip="停止"
+                            Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}"
+                            Margin="0,0,4,0">
+                        <md:PackIcon Kind="StopCircleOutline" Width="22" Height="22"/>
+                    </Button>
+
+                    <!-- 実行 -->
+                    <Button Command="{Binding RunCommand}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Background="{StaticResource NxSuccess}"
+                            Height="34" Padding="12,0" FontSize="13"
+                            IsEnabled="{Binding IsRunning, Converter={StaticResource InvBool}}">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Play" Width="16" Height="16" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="実行" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- ファイル名表示 -->
+                <TextBlock VerticalAlignment="Center" FontSize="11"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           Margin="8,0">
+                    <Run Text="{Binding CurrentFile}"/>
+                    <Run Text=" *" Foreground="{StaticResource NxWarning}"
+                         Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
+                </TextBlock>
+            </DockPanel>
+        </Border>
+
+        <!-- ─── プログレスバー ─── -->
+        <ProgressBar Grid.Row="1" Value="{Binding Progress}" Height="3"
+                     Foreground="{StaticResource NxSuccess}" Background="Transparent"
+                     VerticalAlignment="Bottom" Margin="0,0,0,8"
+                     Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}"/>
+
+        <!-- ─── スクリプトエディター ─── -->
+        <TextBox Grid.Row="2"
+                 Text="{Binding ScriptText, UpdateSourceTrigger=PropertyChanged}"
+                 AcceptsReturn="True" AcceptsTab="True"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto"
+                 FontFamily="Consolas, Courier New, monospace"
+                 FontSize="13"
+                 Background="{StaticResource NxSurface}"
+                 Foreground="#E8E8E8"
+                 BorderThickness="0"
+                 Padding="12"
+                 TextWrapping="NoWrap"
+                 SpellCheck.IsEnabled="False"/>
+
+        <!-- ─── エラーメッセージ ─── -->
+        <Border Grid.Row="3"
+                Background="#2A0000" CornerRadius="4" Padding="10,6" Margin="0,6,0,0"
+                Visibility="{Binding ErrorMessages, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="{Binding ErrorMessages}" Foreground="#FF6B6B"
+                       FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"/>
+        </Border>
+
+        <!-- ─── 実行ログ ─── -->
+        <Border Grid.Row="4" Background="{StaticResource NxSurface}" CornerRadius="6" Margin="0,8,0,0">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="実行ログ"
+                           Style="{StaticResource SectionHeader}" Margin="10,6,0,4"/>
+                <ListBox ItemsSource="{Binding RunLog}"
+                         Background="Transparent" BorderThickness="0"
+                         FontFamily="Consolas" FontSize="11"
+                         Foreground="{DynamicResource MaterialDesignBodyLight}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         Padding="6,0"/>
+            </DockPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

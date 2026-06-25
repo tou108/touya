@@ -1,0 +1,159 @@
+<UserControl x:Class="NXMacroAdvanced.Views.RecorderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="{StaticResource NxBg}">
+    <Grid Margin="24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ─── ヘッダー ─── -->
+        <TextBlock Grid.Row="0" Text="マクロ録音" FontSize="22" FontWeight="Bold"
+                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,16"/>
+
+        <!-- ─── 録音コントロール ─── -->
+        <Border Grid.Row="1" Background="{StaticResource NxSurface}" CornerRadius="8"
+                Padding="20" Margin="0,0,0,12">
+            <StackPanel>
+                <!-- 録音名 -->
+                <TextBox Text="{Binding RecordingName, UpdateSourceTrigger=PropertyChanged}"
+                         md:HintAssist.Hint="録音名"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Width="320" HorizontalAlignment="Left" Margin="0,0,0,16"/>
+
+                <!-- ステータス表示 -->
+                <Border CornerRadius="6" Padding="14,10" Margin="0,0,0,16"
+                        Background="{StaticResource NxSurface2}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- 録音インジケーター -->
+                        <Ellipse Grid.Column="0" Width="12" Height="12" Margin="0,0,10,0"
+                                 VerticalAlignment="Center">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Fill" Value="#555"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsRecording}" Value="True">
+                                            <Setter Property="Fill" Value="#FF4444"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="13">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="● 待機中"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsRecording}" Value="True">
+                                            <Setter Property="Text" Value="🔴 録音中..."/>
+                                            <Setter Property="Foreground" Value="#FF4444"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <!-- イベント数 -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                            <md:PackIcon Kind="GamepadVariant" Width="16" Height="16"
+                                         Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                         VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock FontSize="13" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource MaterialDesignBodyLight}">
+                                <Run Text="{Binding EventCount}"/>
+                                <Run Text=" イベント"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- ボタン -->
+                <WrapPanel>
+                    <Button Command="{Binding StartRecordingCommand}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Background="#C62828" Height="40" Padding="16,0" Margin="0,0,10,0"
+                            IsEnabled="{Binding IsRecording, Converter={StaticResource InvBool}}">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="RecordCircle" Width="18" Height="18"
+                                         VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="録音開始" VerticalAlignment="Center" FontSize="13"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Command="{Binding StopRecordingCommand}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Background="{StaticResource NxSurface2}" Height="40" Padding="16,0"
+                            Margin="0,0,10,0"
+                            IsEnabled="{Binding IsRecording}">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="StopCircle" Width="18" Height="18"
+                                         VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBlock Text="停止" VerticalAlignment="Center" FontSize="13"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Command="{Binding ClearRecordingCommand}"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="#FF5252" Height="40" Padding="12,0">
+                        <StackPanel Orientation="Horizontal">
+                            <md:PackIcon Kind="Delete" Width="16" Height="16"
+                                         VerticalAlignment="Center" Margin="0,0,4,0"/>
+                            <TextBlock Text="クリア" VerticalAlignment="Center" FontSize="12"/>
+                        </StackPanel>
+                    </Button>
+                </WrapPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- ─── エクスポート ─── -->
+        <Border Grid.Row="2" Background="{StaticResource NxSurface}" CornerRadius="8"
+                Padding="16,12" Margin="0,0,0,12">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="エクスポート"
+                           Style="{StaticResource SectionHeader}" Margin="0,0,0,8"/>
+                <Button DockPanel.Dock="Right"
+                        Command="{Binding ExportScriptCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Content="💾 ファイルに保存" Height="34" Margin="12,0,0,0"
+                        VerticalAlignment="Top"
+                        />
+                <TextBlock Text="{Binding ExportedScript}"
+                           FontFamily="Consolas" FontSize="11"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           TextWrapping="Wrap" MaxHeight="80"
+                           TextTrimming="CharacterEllipsis"/>
+            </DockPanel>
+        </Border>
+
+        <!-- ─── 使い方 ─── -->
+        <Border Grid.Row="3" Background="{StaticResource NxSurface2}" CornerRadius="6" Padding="16">
+            <StackPanel>
+                <TextBlock Text="📋 使い方" FontSize="13" FontWeight="Medium"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,0,8"/>
+                <TextBlock FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           Opacity="0.7" TextWrapping="Wrap" LineHeight="20">
+                    <Run Text="1. 録音名を入力してください"/>
+                    <LineBreak/>
+                    <Run Text="2. 「録音開始」ボタンを押してからコントローラー画面でボタン操作を行います"/>
+                    <LineBreak/>
+                    <Run Text="3. 「停止」ボタンで録音を終了します"/>
+                    <LineBreak/>
+                    <Run Text="4. 「ファイルに保存」でマクロファイル(.nmx)として保存できます"/>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

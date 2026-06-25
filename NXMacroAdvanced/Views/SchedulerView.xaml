@@ -1,0 +1,158 @@
+<UserControl x:Class="NXMacroAdvanced.Views.SchedulerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="{StaticResource NxBg}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ─── ヘッダー ─── -->
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="3"
+                   Text="スケジューラー" FontSize="22" FontWeight="Bold"
+                   Foreground="{DynamicResource MaterialDesignBody}" Margin="0,4,0,14"/>
+
+        <!-- ─── 左: エントリーリスト ─── -->
+        <Border Grid.Row="1" Grid.Column="0"
+                Background="{StaticResource NxSurface}" CornerRadius="8">
+            <DockPanel>
+                <!-- リストツールバー -->
+                <Border DockPanel.Dock="Top"
+                        Background="{StaticResource NxSurface2}"
+                        CornerRadius="8,8,0,0" Padding="10,8">
+                    <DockPanel>
+                        <TextBlock Text="スケジュール一覧"
+                                   FontSize="13" FontWeight="Medium"
+                                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                   VerticalAlignment="Center"/>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <Button Command="{Binding AddEntryCommand}"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    ToolTip="追加" Width="32" Height="32">
+                                <md:PackIcon Kind="Plus" Width="16" Height="16"/>
+                            </Button>
+                            <Button Command="{Binding RemoveEntryCommand}"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    ToolTip="削除" Width="32" Height="32">
+                                <md:PackIcon Kind="Delete" Width="16" Height="16"/>
+                            </Button>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- エントリーリスト -->
+                <ListBox ItemsSource="{Binding Entries}"
+                         SelectedItem="{Binding SelectedEntry}"
+                         Background="Transparent" BorderThickness="0"
+                         Padding="4">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="8,6" CornerRadius="4">
+                                <StackPanel>
+                                    <DockPanel>
+                                        <CheckBox IsChecked="{Binding IsEnabled}"
+                                                  Style="{StaticResource MaterialDesignCheckBox}"
+                                                  DockPanel.Dock="Right" Margin="6,0,0,0"/>
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontSize="13" FontWeight="Medium"
+                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </DockPanel>
+                                    <TextBlock FontSize="10"
+                                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                               Opacity="0.7" Margin="0,2,0,0">
+                                        <Run Text="次回:"/>
+                                        <Run Text="{Binding NextRunTime, StringFormat={}{0:MM/dd HH:mm}}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- 保存ボタン -->
+                <Button DockPanel.Dock="Bottom"
+                        Command="{Binding SaveScheduleCommand}"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Content="💾 スケジュール保存"
+                        Height="36" Margin="8" FontSize="12"/>
+            </DockPanel>
+        </Border>
+
+        <!-- ─── 右: エントリー詳細 ─── -->
+        <Border Grid.Row="1" Grid.Column="2"
+                Background="{StaticResource NxSurface}" CornerRadius="8" Padding="20">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel DataContext="{Binding SelectedEntry}">
+                    <TextBlock Text="スケジュール詳細" FontSize="16" FontWeight="Medium"
+                               Foreground="{DynamicResource MaterialDesignBody}" Margin="0,0,0,16"/>
+
+                    <!-- 名前 -->
+                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                             md:HintAssist.Hint="スケジュール名"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Margin="0,0,0,12"/>
+
+                    <!-- 有効/無効 -->
+                    <CheckBox Content="このスケジュールを有効にする"
+                              IsChecked="{Binding IsEnabled}"
+                              Style="{StaticResource MaterialDesignCheckBox}"
+                              Margin="0,0,0,12"/>
+
+                    <!-- 実行時刻 -->
+                    <TextBlock Text="実行時刻" Style="{StaticResource SectionHeader}"/>
+                    <TextBox Text="{Binding ScheduledTime, StringFormat={}{0:yyyy/MM/dd HH:mm}, UpdateSourceTrigger=PropertyChanged}"
+                             md:HintAssist.Hint="例: 2025/01/01 08:00"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Margin="0,0,0,12"/>
+
+                    <!-- マクロファイル -->
+                    <TextBlock Text="マクロファイル" Style="{StaticResource SectionHeader}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding MacroFilePath, UpdateSourceTrigger=PropertyChanged}"
+                                 md:HintAssist.Hint="マクロファイルパス (.nmx)"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 IsReadOnly="True"/>
+                        <Button Grid.Column="2"
+                                Command="{Binding DataContext.SelectMacroFileCommand,
+                                    RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Content="📂 選択" Height="36" FontSize="12"/>
+                    </Grid>
+
+                    <!-- 実行履歴 -->
+                    <Border Background="{StaticResource NxSurface2}" CornerRadius="6"
+                            Padding="12,10" Margin="0,16,0,0">
+                        <StackPanel>
+                            <TextBlock Text="実行履歴" FontSize="12" FontWeight="Medium"
+                                       Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,0,0,6"/>
+                            <TextBlock FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}">
+                                <Run Text="実行回数: "/>
+                                <Run Text="{Binding RunCount}"/>
+                                <Run Text=" 回"/>
+                            </TextBlock>
+                            <TextBlock FontSize="12" Foreground="{DynamicResource MaterialDesignBodyLight}" Margin="0,4,0,0">
+                                <Run Text="最終実行: "/>
+                                <Run Text="{Binding LastRunTime, StringFormat={}{0:yyyy/MM/dd HH:mm:ss}}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+    </Grid>
+</UserControl>
