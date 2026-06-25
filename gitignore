@@ -1,0 +1,25 @@
+## .NET / C#
+bin/
+obj/
+publish/
+*.user
+*.suo
+.vs/
+*.cache
+
+## Visual Studio
+.vscode/
+*.vsconfig
+
+## NuGet
+packages/
+*.nupkg
+
+## Build output
+*.exe
+*.dll
+!Arduino/*.ino
+
+## OS
+.DS_Store
+Thumbs.db
