@@ -108,7 +108,6 @@
                               VerticalScrollBarVisibility="Auto"
                               Background="Transparent">
                     <Canvas x:Name="NodeCanvas" Width="3000" Height="2000"
-                            Background="Transparent"
                             MouseMove="Canvas_MouseMove"
                             MouseUp="Canvas_MouseUp"
                             MouseDown="Canvas_MouseDown">

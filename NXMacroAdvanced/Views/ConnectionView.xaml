@@ -151,8 +151,6 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
-                        Content="{Binding IsConnected, Converter={StaticResource BoolToVis},
-                                  ConverterParameter=connected}"
                         Command="{Binding ConnectCommand}"
                         IsEnabled="{Binding IsConnecting, Converter={conv:InverseBoolConverter}}"
                         Style="{StaticResource MaterialDesignRaisedButton}"
