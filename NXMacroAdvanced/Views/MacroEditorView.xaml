@@ -95,13 +95,12 @@
                 </StackPanel>
 
                 <!-- ファイル名表示 -->
-                <TextBlock VerticalAlignment="Center" FontSize="11"
-                           Foreground="{DynamicResource MaterialDesignBodyLight}"
-                           Margin="8,0">
-                    <Run Text="{Binding CurrentFile}"/>
-                    <Run Text=" *" Foreground="{StaticResource NxWarning}"
-                         Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
-                </TextBlock>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
+                    <TextBlock Text="{Binding CurrentFile}" FontSize="11"
+                               Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+                    <TextBlock Text=" *" FontSize="11" Foreground="{StaticResource NxWarning}"
+                               Visibility="{Binding IsModified, Converter={StaticResource BoolToVis}}"/>
+                </StackPanel>
             </DockPanel>
         </Border>
 
