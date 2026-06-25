@@ -158,7 +158,6 @@
                             <Button Content="Y" Style="{StaticResource GamepadButton}"
                                     Background="{StaticResource BtnY}"
                                     HorizontalAlignment="Center" VerticalAlignment="Top"
-                                    IsChecked="{Binding BtnY}"
                                     Command="{Binding ToggleButtonCommand}" CommandParameter="Y"/>
                             <!-- A (右) -->
                             <Button Content="A" Style="{StaticResource GamepadButton}"

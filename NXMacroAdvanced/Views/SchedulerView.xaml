@@ -110,10 +110,10 @@
               <models:ScheduleRepeatType>Weekly</models:ScheduleRepeatType>
             </ComboBox>
 
-            <md:DateTimePicker SelectedDate="{Binding ScheduledTime}"
-                               md:HintAssist.Hint="実行日時"
-                               Style="{StaticResource MaterialDesignOutlinedDateTimePicker}"
-                               Margin="0,0,0,12"/>
+            <DatePicker SelectedDate="{Binding ScheduledTime}"
+                        md:HintAssist.Hint="実行日時"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        Margin="0,0,0,12"/>
 
             <md:NumericUpDown Value="{Binding IntervalMs}" Minimum="1000"
                               md:HintAssist.Hint="間隔(ms) — Interval モード用"
