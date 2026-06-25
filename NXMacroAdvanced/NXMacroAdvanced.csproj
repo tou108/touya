@@ -24,8 +24,8 @@
   <ItemGroup>
     <!-- MVVM & UI -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="MaterialDesignThemes" Version="5.1.0" />
-    <PackageReference Include="MaterialDesignColors" Version="3.1.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
+    <PackageReference Include="MaterialDesignColors" Version="2.1.4" />
 
     <!-- シリアル通信 (USB HID / USB Gadget) -->
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
@@ -37,7 +37,8 @@
     <PackageReference Include="InTheHand.Net.Bluetooth" Version="4.1.40" />
 
     <!-- 画像認識 -->
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.9.0.20240103" />
+    <PackageReference Include="OpenCvSharp4.Windows"     Version="4.9.0.20240103" />
+    <PackageReference Include="OpenCvSharp4.Extensions"  Version="4.9.0.20240103" />
 
     <!-- OCR -->
     <PackageReference Include="Tesseract" Version="5.2.0" />

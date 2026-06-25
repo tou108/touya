@@ -367,7 +367,14 @@ namespace NXMacroAdvanced.Views
         };
 
         // ─── ポート要素 ───
-        public class PortEllipse : System.Windows.Shapes.Ellipse { }
+        public class PortEllipse : System.Windows.Shapes.Shape
+        {
+            protected override System.Windows.Media.Geometry DefiningGeometry =>
+                new System.Windows.Media.EllipseGeometry(
+                    new System.Windows.Point(ActualWidth / 2, ActualHeight / 2),
+                    Math.Max(0, (ActualWidth  - StrokeThickness) / 2),
+                    Math.Max(0, (ActualHeight - StrokeThickness) / 2));
+        }
     }
 
     // ─── 接続ライン ───

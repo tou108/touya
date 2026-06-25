@@ -193,10 +193,10 @@ namespace NXMacroAdvanced.ViewModels
             DpadRight = _state.DPad == DPadDirection.Right || _state.DPad == DPadDirection.UpRight  || _state.DPad == DPadDirection.DownRight;
         }
 
-        partial void OnLStickXChanged(double v) { _state.LeftStickX  = (byte)(v * 255); _conn.SendState(_state); }
-        partial void OnLStickYChanged(double v) { _state.LeftStickY  = (byte)(v * 255); _conn.SendState(_state); }
-        partial void OnRStickXChanged(double v) { _state.RightStickX = (byte)(v * 255); _conn.SendState(_state); }
-        partial void OnRStickYChanged(double v) { _state.RightStickY = (byte)(v * 255); _conn.SendState(_state); }
+        partial void OnLStickXChanged(double value) { _state.LeftStickX  = (byte)(value * 255); _conn.SendState(_state); }
+        partial void OnLStickYChanged(double value) { _state.LeftStickY  = (byte)(value * 255); _conn.SendState(_state); }
+        partial void OnRStickXChanged(double value) { _state.RightStickX = (byte)(value * 255); _conn.SendState(_state); }
+        partial void OnRStickYChanged(double value) { _state.RightStickY = (byte)(value * 255); _conn.SendState(_state); }
     }
 
     // ═══ マクロエディター ViewModel ═══════════════════════════════════════
@@ -279,7 +279,7 @@ namespace NXMacroAdvanced.ViewModels
             var (_, errors) = MacroInterpreter.Parse(ScriptText);
             ErrorMessages = errors.Count == 0 ? "✅ 構文エラーなし" : string.Join("\n", errors);
         }
-        partial void OnScriptTextChanged(string v) => IsModified = true;
+        partial void OnScriptTextChanged(string value) => IsModified = true;
     }
 
     // ═══ 録音 ViewModel ═══════════════════════════════════════════════════
