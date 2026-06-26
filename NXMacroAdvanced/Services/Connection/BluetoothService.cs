@@ -68,7 +68,7 @@ namespace NXMacroAdvanced.Services.Connection
                 try
                 {
                     using var client = new BluetoothClient();
-                    var devices = client.DiscoverDevices(255, true, true, true, true);
+                    var devices = client.DiscoverDevices(255);
                     result.AddRange(devices);
                 }
                 catch (Exception ex)
