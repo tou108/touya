@@ -226,7 +226,7 @@ namespace NXMacroAdvanced.ViewModels
             {
                 Progress = e.ProgressPct; IsRunning = _runner.IsRunning;
             });
-            _runner.LogMessage += msg => Application.Current?.Dispatcher?.Invoke(() =>
+            _runner.LogMessage += (_, msg) => Application.Current?.Dispatcher?.Invoke(() =>
             {
                 RunLog.Insert(0, msg);
                 while (RunLog.Count > 300) RunLog.RemoveAt(RunLog.Count - 1);

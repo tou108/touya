@@ -88,9 +88,9 @@ namespace NXMacroAdvanced.ViewModels
             ConnectionManager.StatusChanged  += OnConnectionStatusChanged;
             ConnectionManager.ErrorOccurred  += OnConnectionError;
             MacroRunner.ProgressChanged      += OnMacroProgress;
-            MacroRunner.LogMessage           += msg => AddLog(msg);
+            MacroRunner.LogMessage           += (_, msg) => AddLog(msg);
             MacroRunner.Completed            += OnMacroCompleted;
-            MacroScheduler.LogMessage        += msg => AddLog(msg);
+            MacroScheduler.LogMessage        += (_, msg) => AddLog(msg);
 
             // スケジューラー開始
             MacroScheduler.Start();
