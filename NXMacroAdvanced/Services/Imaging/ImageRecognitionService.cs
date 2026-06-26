@@ -79,8 +79,8 @@ namespace NXMacroAdvanced.Services.Imaging
         public static Mat CaptureDesktop(Rectangle? region = null)
         {
             var screen = region ?? new Rectangle(0, 0,
-                System.Windows.Forms.Screen.PrimaryScreen?.Bounds.Width  ?? 1920,
-                System.Windows.Forms.Screen.PrimaryScreen?.Bounds.Height ?? 1080);
+                (int)System.Windows.SystemParameters.PrimaryScreenWidth,
+                (int)System.Windows.SystemParameters.PrimaryScreenHeight);
 
             using var bmp = new Bitmap(screen.Width, screen.Height, PixelFormat.Format32bppArgb);
             using var gfx = Graphics.FromImage(bmp);
@@ -168,7 +168,7 @@ namespace NXMacroAdvanced.Services.Imaging
             ImageRegion?    region    = null,
             CancellationToken ct      = default)
         {
-            return await Task.Run(() =>
+            return await Task.Run<System.Drawing.Point?>(() =>
             {
                 if (!File.Exists(templatePath)) return null;
 
@@ -298,9 +298,10 @@ namespace NXMacroAdvanced.Services.Imaging
 
                 try
                 {
-                    // Mat → Bitmap → Tesseract
+                    // Mat → Bitmap → Pix → Tesseract
                     using var bmp  = BitmapConverter.ToBitmap(roi);
-                    using var page = _engine.Process(bmp);
+                    using var pix  = Tesseract.PixConverter.ToPix(bmp);
+                    using var page = _engine.Process(pix);
                     string text    = page.GetText().Trim();
                     frame.Dispose();
                     return text;
