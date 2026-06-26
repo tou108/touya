@@ -300,7 +300,9 @@ namespace NXMacroAdvanced.Services.Imaging
                 {
                     // Mat → Bitmap → Pix → Tesseract
                     using var bmp  = BitmapConverter.ToBitmap(roi);
-                    using var pix  = Tesseract.PixConverter.ToPix(bmp);
+                    using var ms   = new System.IO.MemoryStream();
+                    bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                    using var pix  = Tesseract.Pix.LoadFromMemory(ms.ToArray());
                     using var page = _engine.Process(pix);
                     string text    = page.GetText().Trim();
                     frame.Dispose();
